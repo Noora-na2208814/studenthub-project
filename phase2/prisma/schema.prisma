@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String
+  email    String  @unique
+  password String
+  bio      String?
+  profilePicture String?
+
+  // Relations
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+
+  followers Follows[] @relation("following")
+  following Follows[] @relation("follower")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  comments Comment[]
+  likes    Like[]
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  text    String
+  userId  Int
+  postId  Int
+  user    User   @relation(fields: [userId], references: [id])
+  post    Post   @relation(fields: [postId], references: [id])
+}
+
+model Like {
+  id      Int  @id @default(autoincrement())
+  userId  Int
+  postId  Int
+  user    User @relation(fields: [userId], references: [id])
+  post    Post @relation(fields: [postId], references: [id])
+}
+
+model Follows {
+  id          Int  @id @default(autoincrement())
+  followerId  Int
+  followingId Int
+  follower    User @relation("follower", fields: [followerId], references: [id])
+  following   User @relation("following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+}
