@@ -13,7 +13,7 @@ class PostsRepo {
     const where =
       followingIds.length > 0
         ? { userId: { in: [userId, ...followingIds] } }
-        : { userId };
+        : {userId};
 
     const posts = await prisma.post.findMany({
       where,

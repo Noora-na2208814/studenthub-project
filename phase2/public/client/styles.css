@@ -25,7 +25,10 @@ body {
   color: var(--text);
   font-family: var(--font);
 }
-
+main {
+  max-height: 200vh;
+  overflow-y: scroll;
+}
 a {
   color: var(--primary);
   text-decoration: none;

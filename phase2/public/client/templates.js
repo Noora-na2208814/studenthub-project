@@ -148,12 +148,23 @@ export const profileTemplate = (me) => `
 `;
 
 export const suggestionsTemplate = (me) => {
-  const others = state.users.filter((user) => user.id !== me.id);
+  const pool = state.suggestionsUsers ?? state.users;
+  const others = pool.filter((user) => user.id !== me.id);
 
   return `
     <div class="card sidebar">
       <div class="section-head">
         <h4>People to follow</h4>
+      </div>
+
+      <div class="field" style="margin-bottom:12px;">
+        <input
+          id="userSearch"
+          type="text"
+          placeholder="Search by username..."
+          value="${safe(state.peopleSearch)}"
+          autocomplete="off"
+        />
       </div>
 
       <div class="suggestions">
@@ -165,7 +176,9 @@ export const suggestionsTemplate = (me) => {
                   return `
                     <div class="suggestion-item">
                       <div>
-                        <h5>${safe(user.username)}</h5>
+                        <a href="/profile/${user.id}">
+                          <h5>${safe(user.username)}</h5>
+                        </a>
                         <p>${safe(user.bio || "No bio yet")}</p>
                       </div>
 
@@ -181,7 +194,7 @@ export const suggestionsTemplate = (me) => {
                   `;
                 })
                 .join("")
-            : `<p class="subtle">No other users yet.</p>`
+            : `<p class="subtle">${state.peopleSearch ? "No users found." : "No other users yet."}</p>`
         }
       </div>
     </div>
@@ -229,7 +242,7 @@ export const postTemplate = (post, me) => {
           </div>
 
           <div>
-            <h4>${safe(author ? author.username : "Unknown user")}</h4>
+            <a href="/profile/${author.id}"><h4>${safe(author ? author.username : "Unknown user")}</h4></a>
             <p>${timeText(post.createdAt)}</p>
           </div>
         </div>
@@ -383,13 +396,15 @@ export const appTemplate = () => {
     </header>
 
     <div class="layout">
-      ${profileTemplate(me)}
+      <div>
+        ${profileTemplate(me)}
+        ${detailTemplate()}
+      </div>
       <main style="display:grid; gap:18px;">
         ${composerTemplate()}
         ${feedTemplate(me)}
       </main>
       ${suggestionsTemplate(me)}
-      ${detailTemplate()}
     </div>
   `;
 };

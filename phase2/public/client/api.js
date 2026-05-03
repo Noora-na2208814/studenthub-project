@@ -64,5 +64,10 @@ export const saveProfileRequest = (userId, payload) =>
     body: JSON.stringify(payload),
   });
 
-export const fetchUsers = () => fetch(`${API}/api/users`);
+export const fetchUsers = (searchTerm = "") => {
+  const url = searchTerm
+    ? `${API}/api/users?searchTerm=${encodeURIComponent(searchTerm)}`
+    : `${API}/api/users`;
+  return fetch(url);
+};
 export const fetchFeed = (userId) => fetch(`${API}/api/posts?userId=${userId}`);

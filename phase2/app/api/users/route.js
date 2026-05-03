@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import usersRepo from "@/repos/users";
 
 // GET /api/users – return all users with followers/following arrays
-export async function GET() {
-  const users = await usersRepo.getAll();
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const searchTerm = searchParams.get('searchTerm');
+  const users = await usersRepo.getAll(searchTerm);
+  console.log(searchTerm);
   return NextResponse.json(users);
 }
 

@@ -6,6 +6,8 @@ export const state = {
   message: "",
   users: [],
   posts: [],
+  peopleSearch: "",
+  suggestionsUsers: null,
 };
 
 export const saveCurrentUser = () => {

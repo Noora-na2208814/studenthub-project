@@ -3,7 +3,7 @@ import postsRepo from "@/repos/posts";
 
 // DELETE /api/posts/:id – delete a post (body: { userId })
 export async function DELETE(request, { params }) {
-  const { post_id } = await params;
+  const {  post_id } = await params;
   const { userId } = await request.json();
 
   if (!userId) {

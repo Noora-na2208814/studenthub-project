@@ -19,14 +19,25 @@ class UsersRepo {
     });
   }
 
-  async getAll() {
-    const users = await prisma.user.findMany({
-      include: {
-        followers: { select: { followerId: true } },
-        following: { select: { followingId: true } },
-      },
-    });
+  async getAll(serachTerm) {
+    let users;
+    if (serachTerm) {
+      users = await prisma.user.findMany({
+        where: { username: { contains: serachTerm } },
 
+        include: {
+          followers: { select: { followerId: true } },
+          following: { select: { followingId: true } },
+        },
+      });
+    } else {
+      users = await prisma.user.findMany({
+        include: {
+          followers: { select: { followerId: true } },
+          following: { select: { followingId: true } },
+        },
+      });
+    }
     return users.map((u) => ({
       id: u.id,
       username: u.username,
@@ -59,6 +70,21 @@ class UsersRepo {
       await prisma.follows.create({ data: { followerId, followingId } });
       return { following: true };
     }
+  }
+
+  async getUser(id) {
+    return await prisma.user.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            posts: true,
+            followers: true,
+            following: true,
+          },
+        },
+      },
+    });
   }
 }
 

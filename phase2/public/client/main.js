@@ -26,7 +26,6 @@ const render = () => {
 
   if (currentRoute === "register") {
     // state.message = "";
-    // console.log("state.message in register route:", state.message);
     app.innerHTML = renderRegister();
     return;
   }
@@ -58,6 +57,9 @@ const loadAndRender = async () => {
     } catch {
       // keep existing state on network error
     }
+
+    state.peopleSearch = "";
+    state.suggestionsUsers = null;
   }
 
   render();
@@ -103,7 +105,7 @@ const registerUser = async (e) => {
   const bio = document.querySelector("#regBio").value.trim();
   const profilePicture = document.querySelector("#regPicture").value.trim();
 
-  if (!username || !email || !password ) {
+  if (!username || !email || !password) {
     setMessage("Please fill all required fields.");
     render();
     return;
@@ -270,11 +272,29 @@ app.addEventListener("click", (e) => {
   }
 });
 
-app.addEventListener("input", (e) => {
+app.addEventListener("input", async (e) => {
   if (e.target && e.target.id === "postContent") {
     const count = e.target.value.length;
     const counter = document.querySelector("#charCount");
     if (counter) counter.textContent = `${count} / 500`;
+  }
+
+  if (e.target && e.target.id === "userSearch") {
+    const term = e.target.value;
+    state.peopleSearch = term;
+
+    try {
+      const res = await fetchUsers(term);
+      if (res.ok) state.suggestionsUsers = await res.json();
+    } catch {}
+
+    render();
+
+    const input = document.querySelector("#userSearch");
+    if (input) {
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
   }
 });
 
